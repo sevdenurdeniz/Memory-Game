@@ -30,14 +30,22 @@ initializeGame();
 function initializeGame() {
   //butonu oyun bitene kadar gizle
   restartButton.style.display = "none";
-  //kart dizisini oluştur
+  restartButton.removeEventListener("click", restartGame);
+
+  //kart dizisini oluştur //random 10 dizi
   cards = [];
-  for (let i = 0; i < 10; i++) {
-    //20 tane kart oluşturur bu döngü
-    const icon = icons[i % icons.length]; //döngü içinde tekrar tekrar kullanılsın
-    const card1 = createCard(icon);
-    const card2 = createCard(icon);
-    cards.push(card1, card2);
+  const randomIcons = [];
+
+  while (randomIcons.length < 10) {
+    const randomIndex = Math.floor(Math.random() * icons.length);
+    const randomIcon = icons[randomIndex];
+
+    if (!randomIcons.includes(randomIcon)) {
+      randomIcons.push(randomIcon);
+      const card1 = createCard(randomIcon);
+      const card2 = createCard(randomIcon);
+      cards.push(card1, card2);
+    }
   }
 
   // kartları karıştır
@@ -49,7 +57,6 @@ function initializeGame() {
 
   // dinleyiciler
   cards.forEach((card) => card.addEventListener("click", flipCard));
-  restartButton.addEventListener("click", restartGame);
 
   // kartların ön yüzlerini dönük tut
   cards.forEach((card) => card.classList.add("flipped"));
@@ -65,7 +72,7 @@ function initializeGame() {
 
 function createCard(icon) {
   const card = document.createElement("div");
-  card.classList.add("card", "col-lg-2", "col-12", "m-lg-2");
+  card.classList.add("card","col-2");
 
   const front = document.createElement("img");
   front.src = "icons/" + icon;
@@ -95,9 +102,9 @@ function flipCard() {
   ) {
     this.classList.add("flipped");
     flippedCards.push(this);
-     //  kartlar açılma sesi
-     var sesAc = new Audio("sounds/card.mp3");
-     sesAc.play();
+    //  kartlar açılma sesi
+    var sesAc = new Audio("sounds/card.mp3");
+    sesAc.play();
 
     if (flippedCards.length === 2) {
       const firstCard = flippedCards[0];
@@ -115,9 +122,9 @@ function flipCard() {
         if (matchedCards.length === cards.length) {
           //tüm kartlar eşleştiğinde
           endGame();
-           // tüm kartlar eşleşme sesi
-        var sesBitti = new Audio("sounds/complete.mp3");
-        sesBitti.play();
+          // tüm kartlar eşleşme sesi
+          var sesBitti = new Audio("sounds/complete.mp3");
+          sesBitti.play();
         }
       } else {
         setTimeout(() => {
@@ -125,10 +132,21 @@ function flipCard() {
           firstCard.classList.remove("flipped");
           secondCard.classList.remove("flipped");
           flippedCards = [];
-            // tüm kartlar eşleşme sesi
-        var sesYanlis = new Audio("sounds/error.mp3");
-        sesYanlis.play();
+
+          // yanlış kart
+          var sesYanlis = new Audio("sounds/error.mp3");
+          sesYanlis.play();
+        }, 1500);
+        setTimeout(() => {
+          firstCard.classList.add("wrong-card");
+          secondCard.classList.add("wrong-card");
         }, 1000);
+
+        setTimeout(() => {
+          //eşleşmeyenden classı sil
+          firstCard.classList.remove("wrong-card");
+          secondCard.classList.remove("wrong-card");
+        }, 1800);
       }
     }
   }
@@ -139,9 +157,14 @@ function flipCard() {
 function endGame() {
   cards.forEach((card) => card.removeEventListener("click", flipCard));
   restartButton.style.display = "block";
+  restartButton.addEventListener("click", restartGame);
 }
 
 function restartGame() {
-  restartButton.style.display = "none";
   initializeGame();
+  restartButton.style.display = "none";
 }
+
+ 
+
+ 
