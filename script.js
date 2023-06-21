@@ -35,7 +35,7 @@ function initializeGame() {
   //kart dizisini oluştur //random 10 dizi
   cards = [];
   const randomIcons = [];
-
+  cards = shuffleCards(cards);
   while (randomIcons.length < 10) {
     const randomIndex = Math.floor(Math.random() * icons.length);
     const randomIcon = icons[randomIndex];
@@ -68,6 +68,8 @@ function initializeGame() {
       card.addEventListener("click", flipCard);
     });
   }, 2000);
+
+  matchedCards = [];
 }
 
 function createCard(icon) {
@@ -88,10 +90,20 @@ function createCard(icon) {
 
 //kartları karıştırma döngüsü / iç içe döngü
 function shuffleCards(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+  // Fisher--Yates Algorithm
+  var currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
+
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
   }
+  return array;
 }
 
 function flipCard() {
